@@ -3,7 +3,7 @@
 
 ## Overview
 
-This repository contains the implementation of a Convolutional Neural Network (CNN) for image classification, developed as part of the Phase 2 project requirements. The project includes data preprocessing, model training, evaluation, visualization, and comparison with a transfer learning model.
+This repository contains the implementation of a Convolutional Neural Network (CNN) for image classification, developed as part of the project requirements. The project includes data preprocessing, model training, evaluation, visualization, and comparison with a transfer learning model.
 
 ---
 
