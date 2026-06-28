@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fashion Product Identifier — DSC 120A</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0e0c2e;
+    --indigo: #1a1060;
+    --blue: #378ADD;
+    --blue-lt: #85B7EB;
+    --coral: #D85A30;
+    --coral-lt: #F0997B;
+    --teal: #1D9E75;
+    --teal-lt: #5DCAA5;
+    --purple: #7F77DD;
+    --text: #1a1a2e;
+    --text-muted: #5a5a7a;
+    --surface: #f8f7ff;
+    --border: #e0dff5;
+    --card: #ffffff;
+    --radius: 12px;
+    --font-display: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--surface);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 24px 100px;
+  }
+  .hero-canvas { position: absolute; inset: 0; opacity: 0.18; }
+  .hero-inner {
+    position: relative;
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal-lt);
+    border: 1px solid rgba(93, 202, 165, 0.35);
+    border-radius: 100px;
+    padding: 6px 16px;
+    margin-bottom: 28px;
+  }
+  .eyebrow-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--teal-lt);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 5vw, 54px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+  .hero h1 span { color: var(--blue-lt); }
+
+  .hero-desc {
+    font-size: 17px;
+    color: rgba(255,255,255,0.6);
+    max-width: 580px;
+    margin: 0 auto 36px;
+    line-height: 1.65;
+  }
+
+  .hero-badges {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    margin-bottom: 44px;
+  }
+  .badge {
+    font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7);
+  }
+  .badge-blue  { border-color: rgba(55,138,221,.5);  color: var(--blue-lt); }
+  .badge-coral { border-color: rgba(216,90,48,.5);   color: var(--coral-lt); }
+  .badge-teal  { border-color: rgba(29,158,117,.5);  color: var(--teal-lt); }
+  .badge-purple{ border-color: rgba(127,119,221,.5); color: #afa9ec; }
+
+  .hero-cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue); color: #fff;
+    font-family: var(--font-display); font-weight: 600; font-size: 15px;
+    padding: 13px 28px; border-radius: 8px; text-decoration: none;
+    transition: background .15s, transform .12s; border: none; cursor: pointer;
+  }
+  .btn-primary:hover { background: #2a7acc; transform: translateY(-1px); }
+
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: rgba(255,255,255,.8);
+    font-family: var(--font-display); font-weight: 600; font-size: 15px;
+    padding: 13px 28px; border-radius: 8px; text-decoration: none;
+    border: 1px solid rgba(255,255,255,.25);
+    transition: border-color .15s, color .15s, transform .12s;
+  }
+  .btn-outline:hover { border-color: rgba(255,255,255,.55); color:#fff; transform:translateY(-1px); }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,.75);
+    font-family: var(--font-display); font-weight: 600; font-size: 15px;
+    padding: 13px 28px; border-radius: 8px; text-decoration: none;
+    border: 1px solid rgba(255,255,255,.12);
+    transition: background .15s, transform .12s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.14); transform:translateY(-1px); }
+
+  /* ─── STATS STRIP ─── */
+  .stats-strip { background: var(--indigo); border-bottom: 1px solid rgba(255,255,255,.07); padding: 0 24px; }
+  .stats-inner {
+    max-width: 860px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+  }
+  .stat-item { padding: 26px 16px; text-align: center; border-right: 1px solid rgba(255,255,255,.08); }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 6px; }
+  .stat-label { font-size: 11px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .09em; font-weight: 500; }
+
+  /* ─── MAIN ─── */
+  .main { max-width: 860px; margin: 0 auto; padding: 64px 24px 80px; }
+
+  .section-label {
+    font-family: var(--font-display); font-size: 11px; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: var(--font-display); font-size: clamp(20px, 3.5vw, 30px); font-weight: 700;
+    color: var(--text); margin-bottom: 12px; letter-spacing: -.02em; line-height: 1.2;
+  }
+  .section-desc { color: var(--text-muted); max-width: 560px; margin-bottom: 36px; font-size: 16px; }
+
+  /* ─── REPO HERO CARD ─── */
+  .repo-card {
+    background: var(--indigo);
+    border-radius: 16px;
+    padding: 32px 32px 28px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .repo-card::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(55,138,221,.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .repo-icon {
+    flex-shrink: 0;
+    width: 52px; height: 52px; border-radius: 12px;
+    background: rgba(55,138,221,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .repo-info { flex: 1; }
+  .repo-name {
+    font-family: var(--font-display); font-size: 18px; font-weight: 700;
+    color: #fff; margin-bottom: 6px; word-break: break-all;
+  }
+  .repo-name span { color: var(--blue-lt); }
+  .repo-desc { font-size: 14px; color: rgba(255,255,255,.55); margin-bottom: 18px; line-height: 1.55; }
+  .repo-meta { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .repo-meta-item { font-size: 13px; color: rgba(255,255,255,.5); display: flex; align-items: center; gap: 6px; }
+  .repo-meta-item strong { color: rgba(255,255,255,.8); font-weight: 500; }
+  .repo-links { display: flex; gap: 10px; flex-wrap: wrap; }
+  .repo-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; font-family: var(--font-display);
+    padding: 8px 16px; border-radius: 7px; text-decoration: none;
+    transition: opacity .15s, transform .12s;
+  }
+  .repo-link:hover { opacity: .85; transform: translateY(-1px); }
+  .rl-blue  { background: var(--blue); color: #fff; }
+  .rl-ghost { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.15); }
+
+  /* ─── RESOURCE CARDS ─── */
+  .resources-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px; margin-bottom: 64px;
+  }
+  .resource-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px;
+    text-decoration: none; color: inherit;
+    display: flex; flex-direction: column;
+    transition: border-color .15s, transform .12s, box-shadow .15s;
+    position: relative; overflow: hidden;
+  }
+  .resource-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    opacity: 0; transition: opacity .15s;
+  }
+  .resource-card:hover { border-color: #c8c5e8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(26,16,96,.1); }
+  .resource-card:hover::before { opacity: 1; }
+  .card-blue::before   { background: var(--blue); }
+  .card-coral::before  { background: var(--coral); }
+  .card-teal::before   { background: var(--teal); }
+  .card-purple::before { background: var(--purple); }
+
+  .card-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 22px; }
+  .icon-blue   { background: #E6F1FB; }
+  .icon-coral  { background: #FAECE7; }
+  .icon-teal   { background: #E1F5EE; }
+  .icon-purple { background: #EEEDFE; }
+
+  .card-tag { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .tag-blue   { color: var(--blue); }
+  .tag-coral  { color: var(--coral); }
+  .tag-teal   { color: var(--teal); }
+  .tag-purple { color: #534AB7; }
+
+  .card-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; line-height: 1.3; }
+  .card-desc  { font-size: 14px; color: var(--text-muted); line-height: 1.6; flex: 1; margin-bottom: 16px; }
+  .card-meta  { font-size: 12px; font-weight: 500; color: #9898b8; display: flex; align-items: center; gap: 6px; }
+  .card-arrow { margin-left: auto; font-size: 16px; color: #c0bedd; transition: transform .15s, color .15s; }
+  .resource-card:hover .card-arrow { transform: translate(3px,-3px); color: var(--blue); }
+
+  /* ─── FILES ─── */
+  .files-list { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--card); margin-bottom: 48px; }
+  .file-row {
+    display: flex; align-items: center; gap: 14px; padding: 14px 20px;
+    border-bottom: 1px solid var(--border); text-decoration: none; color: inherit;
+    transition: background .12s;
+  }
+  .file-row:last-child { border-bottom: none; }
+  .file-row:hover { background: var(--surface); }
+  .file-emoji { font-size: 20px; flex-shrink: 0; width: 30px; text-align: center; }
+  .file-info { flex: 1; }
+  .file-name { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--text); }
+  .file-sub  { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .file-badge {
+    font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 100px;
+    letter-spacing: .06em;
+  }
+  .fb-blue   { background: #E6F1FB; color: #185FA5; }
+  .fb-coral  { background: #FAECE7; color: #993C1D; }
+  .fb-teal   { background: #E1F5EE; color: #0F6E56; }
+
+  /* ─── PIPELINE ─── */
+  .arch-steps {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+    background: var(--card); margin-bottom: 48px;
+  }
+  .arch-step { padding: 20px 18px; border-right: 1px solid var(--border); }
+  .arch-step:last-child { border-right: none; }
+  .arch-step-num { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--blue); margin-bottom: 8px; }
+  .arch-step-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+  .arch-step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+
+  /* ─── MODELS ─── */
+  .models-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 64px; }
+  .model-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+  .model-card.featured { border-color: #b5d4f4; background: #fafcff; }
+  .model-name { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .model-type { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+  .model-metric { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .model-metric:last-child { border-bottom: none; }
+  .metric-label { color: var(--text-muted); }
+  .metric-val { font-family: var(--font-display); font-weight: 600; color: var(--text); }
+  .metric-bar-wrap { margin-top: 14px; }
+  .metric-bar-label { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; display: flex; justify-content: space-between; }
+  .metric-bar-track { height: 6px; background: var(--border); border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
+  .metric-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .fill-blue  { background: var(--blue); }
+  .fill-coral { background: var(--coral); }
+
+  /* ─── QUICKSTART ─── */
+  .code-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .code-block { background: #0e0c2e; border-radius: var(--radius); padding: 18px 22px; margin-bottom: 14px; overflow-x: auto; }
+  .code-block pre { font-family: 'Courier New', Courier, monospace; font-size: 13px; color: #a8b3cf; line-height: 1.65; white-space: pre; }
+  .cm { color: #4a5570; }
+  .kw { color: var(--blue-lt); }
+  .st { color: var(--teal-lt); }
+  .nm { color: var(--coral-lt); }
+
+  /* ─── FOOTER ─── */
+  .footer { background: var(--navy); padding: 48px 24px; text-align: center; }
+  .footer-inner { max-width: 560px; margin: 0 auto; }
+  .footer-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+  .footer-sub { font-size: 15px; color: rgba(255,255,255,.5); margin-bottom: 28px; }
+  .footer-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 36px; }
+  .footer-link { font-size: 13px; color: rgba(255,255,255,.35); text-decoration: none; transition: color .15s; }
+  .footer-link:hover { color: rgba(255,255,255,.75); }
+  .footer-author { font-size: 13px; color: rgba(255,255,255,.3); margin-top: 28px; }
+  .footer-author strong { color: rgba(255,255,255,.5); font-weight: 500; }
+
+  @media (max-width: 640px) {
+    .models-row { grid-template-columns: 1fr; }
+    .repo-card { flex-direction: column; }
+    .stat-num { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow"><span class="eyebrow-dot"></span>DSC 120A · Deep Learning Project</div>
+    <h1>Fashion Product<br><span>Image Classifier</span></h1>
+    <p class="hero-desc">A complete CNN pipeline — custom residual network with squeeze-and-excitation blocks versus MobileNetV2 transfer learning. All code, data, and resources are free and open.</p>
+    <div class="hero-badges">
+      <span class="badge badge-blue">TensorFlow 2.x</span>
+      <span class="badge badge-coral">10 Fashion Classes</span>
+      <span class="badge badge-teal">Grad-CAM</span>
+      <span class="badge badge-purple">MixUp Augmentation</span>
+      <span class="badge">ROC Curves · Confusion Matrix</span>
+    </div>
+    <div class="hero-cta-row">
+      <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier/blob/main/Product_classifier.ipynb" target="_blank" class="btn-primary">📓 Open Notebook</a>
+      <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier" target="_blank" class="btn-outline">⭐ View on GitHub</a>
+      <a href="https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small" target="_blank" class="btn-ghost">↓ Get Dataset</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">Fashion classes</div></div>
+    <div class="stat-item"><div class="stat-num">192²</div><div class="stat-label">Image resolution</div></div>
+    <div class="stat-item"><div class="stat-num">≥90%</div><div class="stat-label">Target accuracy</div></div>
+    <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">Models compared</div></div>
+    <div class="stat-item"><div class="stat-num">13</div><div class="stat-label">Output figures</div></div>
+    <div class="stat-item"><div class="stat-num">25</div><div class="stat-label">CNN epochs</div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- REPO CARD -->
+  <div class="section-label">GitHub repository</div>
+  <div class="repo-card">
+    <div class="repo-icon">📦</div>
+    <div class="repo-info">
+      <div class="repo-name"><span>siddhantm29-netizen</span> / DSC_120_A_ML_Product_Identifier</div>
+      <div class="repo-desc">CNN-based fashion image classifier — custom ResNet-SE model trained from scratch, compared against MobileNetV2 transfer learning. Includes Grad-CAM, ROC curves, error analysis, and 13 saved figures. Built for DSC 120A Phase 2.</div>
+      <div class="repo-meta">
+        <span class="repo-meta-item">⚡ <strong>Jupyter Notebook</strong> · 100%</span>
+        <span class="repo-meta-item">🌿 <strong>main</strong> branch</span>
+        <span class="repo-meta-item">🔓 Public</span>
+      </div>
+      <div class="repo-links">
+        <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier" target="_blank" class="repo-link rl-blue">⭐ Star on GitHub</a>
+        <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier/blob/main/Product_classifier.ipynb" target="_blank" class="repo-link rl-ghost">📓 Product_classifier.ipynb</a>
+        <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier/blob/main/README.md" target="_blank" class="repo-link rl-ghost">📄 README.md</a>
+        <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier/blob/main/Fashion_Classification_Proposal.docx" target="_blank" class="repo-link rl-ghost">📝 Proposal.docx</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPO FILES -->
+  <div class="section-label">Files in this repo</div>
+  <h2 class="section-title">What's inside</h2>
+  <p class="section-desc">Three files, all public. The notebook is the main deliverable — the proposal doc and README give context.</p>
+
+  <div class="files-list">
+    <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier/blob/main/Product_classifier.ipynb" target="_blank" class="file-row">
+      <div class="file-emoji">📓</div>
+      <div class="file-info">
+        <div class="file-name">Product_classifier.ipynb</div>
+        <div class="file-sub">Full pipeline — loading, preprocessing, custom CNN, MobileNetV2 TL, Grad-CAM, ROC, error analysis. Run on Kaggle or Colab.</div>
+      </div>
+      <span class="file-badge fb-blue">Main notebook</span>
+    </a>
+    <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier/blob/main/Fashion_Classification_Proposal.docx" target="_blank" class="file-row">
+      <div class="file-emoji">📝</div>
+      <div class="file-info">
+        <div class="file-name">Fashion_Classification_Proposal.docx</div>
+        <div class="file-sub">Phase 2 project proposal — motivation, methodology, evaluation plan.</div>
+      </div>
+      <span class="file-badge fb-coral">Proposal</span>
+    </a>
+    <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier/blob/main/README.md" target="_blank" class="file-row">
+      <div class="file-emoji">📄</div>
+      <div class="file-info">
+        <div class="file-name">README.md</div>
+        <div class="file-sub">Setup instructions, project workflow, requirements, and results table.</div>
+      </div>
+      <span class="file-badge fb-teal">Docs</span>
+    </a>
+  </div>
+
+  <!-- FREE RESOURCES -->
+  <div class="section-label">Free resources</div>
+  <h2 class="section-title">Everything you need to run it</h2>
+  <p class="section-desc">No paid credits required — just a Kaggle account for the dataset and a Google account for Colab.</p>
+
+  <div class="resources-grid">
+    <a href="https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small" target="_blank" class="resource-card card-blue">
+      <div class="card-icon icon-blue">🗂️</div>
+      <div class="card-tag tag-blue">Dataset</div>
+      <div class="card-title">Fashion Product Images (Small)</div>
+      <div class="card-desc">44k+ product images with a rich metadata CSV. The notebook loads from <code>/kaggle/input/datasets/paramaggarwal/fashion-product-images-small</code>. Free on Kaggle.</div>
+      <div class="card-meta">kaggle.com · paramaggarwal <span class="card-arrow">↗</span></div>
+    </a>
+
+    <a href="https://colab.research.google.com" target="_blank" class="resource-card card-coral">
+      <div class="card-icon icon-coral">⚡</div>
+      <div class="card-tag tag-coral">Runtime</div>
+      <div class="card-title">Google Colab — Free T4 GPU</div>
+      <div class="card-desc">Upload <code>Product_classifier.ipynb</code>, connect a T4 GPU, and run all cells. Mixed precision is enabled automatically when a GPU is detected.</div>
+      <div class="card-meta">colab.research.google.com <span class="card-arrow">↗</span></div>
+    </a>
+
+    <a href="https://www.kaggle.com/code" target="_blank" class="resource-card card-teal">
+      <div class="card-icon icon-teal">🏆</div>
+      <div class="card-tag tag-teal">Runtime (alt)</div>
+      <div class="card-title">Kaggle Notebooks — Free P100 GPU</div>
+      <div class="card-desc">The notebook's data paths are already set for Kaggle. Attach the dataset, hit Run All — no path changes needed. 30 GPU hours/week free.</div>
+      <div class="card-meta">kaggle.com/code <span class="card-arrow">↗</span></div>
+    </a>
+
+    <a href="https://www.tensorflow.org/api_docs" target="_blank" class="resource-card card-purple">
+      <div class="card-icon icon-purple">📖</div>
+      <div class="card-tag tag-purple">Docs</div>
+      <div class="card-title">TensorFlow / Keras API Docs</div>
+      <div class="card-desc">Reference for every layer, callback, and optimizer in the notebook — including AdamW, CosineDecay, ModelCheckpoint, and MixUp patterns.</div>
+      <div class="card-meta">tensorflow.org <span class="card-arrow">↗</span></div>
+    </a>
+
+    <a href="https://keras.io/api/applications/mobilenet/" target="_blank" class="resource-card card-blue">
+      <div class="card-icon icon-blue">🧠</div>
+      <div class="card-tag tag-blue">Pretrained weights</div>
+      <div class="card-title">MobileNetV2 ImageNet Weights</div>
+      <div class="card-desc">Auto-downloaded when you call <code>MobileNetV2(weights='imagenet')</code>. ~14 MB, free from Keras Applications. No Kaggle or HuggingFace account needed.</div>
+      <div class="card-meta">keras.io/api/applications <span class="card-arrow">↗</span></div>
+    </a>
+
+    <a href="https://scikit-learn.org/stable/modules/classes.html" target="_blank" class="resource-card card-coral">
+      <div class="card-icon icon-coral">📊</div>
+      <div class="card-tag tag-coral">Evaluation</div>
+      <div class="card-title">scikit-learn Metrics</div>
+      <div class="card-desc">All evaluation — <code>classification_report</code>, <code>confusion_matrix</code>, <code>roc_curve</code>, <code>auc</code>, <code>label_binarize</code> — comes from sklearn. Preinstalled on Colab and Kaggle.</div>
+      <div class="card-meta">scikit-learn.org <span class="card-arrow">↗</span></div>
+    </a>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="section-label">What the notebook does</div>
+  <h2 class="section-title">Pipeline in 5 steps</h2>
+  <p class="section-desc">18 notebook cells, fully commented. Here's the order of operations.</p>
+
+  <div class="arch-steps">
+    <div class="arch-step">
+      <div class="arch-step-num">01</div>
+      <div class="arch-step-title">Load &amp; filter</div>
+      <div class="arch-step-desc">Read styles.csv, resolve image paths, pick the 10 most common subCategory classes with ≥350 samples each.</div>
+    </div>
+    <div class="arch-step">
+      <div class="arch-step-num">02</div>
+      <div class="arch-step-title">Split &amp; pipeline</div>
+      <div class="arch-step-desc">Stratified 70/15/15 split, no leakage. tf.data pipeline with parallel JPEG decode, resize to 192×192, normalize to [0, 1].</div>
+    </div>
+    <div class="arch-step">
+      <div class="arch-step-num">03</div>
+      <div class="arch-step-title">Augment + MixUp</div>
+      <div class="arch-step-desc">In-model layers (flip, rotate, zoom, contrast) plus batch MixUp at α=0.2. Disabled at inference automatically.</div>
+    </div>
+    <div class="arch-step">
+      <div class="arch-step-num">04</div>
+      <div class="arch-step-title">Train both models</div>
+      <div class="arch-step-desc">Custom ResNet-SE (25 epochs, AdamW + cosine decay) and MobileNetV2 with two-phase fine-tuning (8 head + 18 fine-tune epochs).</div>
+    </div>
+    <div class="arch-step">
+      <div class="arch-step-num">05</div>
+      <div class="arch-step-title">Evaluate &amp; visualize</div>
+      <div class="arch-step-desc">Confusion matrices, ROC curves, Grad-CAM overlays, error analysis, and a side-by-side model comparison table. 13 figures saved.</div>
+    </div>
+  </div>
+
+  <!-- MODEL COMPARISON -->
+  <div class="section-label">Models</div>
+  <h2 class="section-title">What's being compared</h2>
+  <p class="section-desc">A custom CNN trained from scratch vs MobileNetV2 with ImageNet transfer learning — same test split, same evaluation metrics.</p>
+
+  <div class="models-row">
+    <div class="model-card">
+      <div class="model-name">Custom ResNet-SE CNN</div>
+      <div class="model-type">Trained from scratch · 5 stages · SE blocks</div>
+      <div class="metric-bar-wrap">
+        <div class="metric-bar-label"><span>Target accuracy</span><span>≥ 90%</span></div>
+        <div class="metric-bar-track"><div class="metric-bar-fill fill-blue" style="width:90%"></div></div>
+        <div class="metric-bar-label"><span>Label smoothing</span><span>0.05</span></div>
+        <div class="metric-bar-track"><div class="metric-bar-fill fill-blue" style="width:25%"></div></div>
+      </div>
+      <div class="model-metric"><span class="metric-label">Optimizer</span><span class="metric-val">AdamW + cosine decay</span></div>
+      <div class="model-metric"><span class="metric-label">Regularization</span><span class="metric-val">MixUp · SE · SpatialDropout</span></div>
+      <div class="model-metric"><span class="metric-label">Epochs</span><span class="metric-val">25 (+ overfit test)</span></div>
+      <div class="model-metric"><span class="metric-label">Eval</span><span class="metric-val">TTA (flip average)</span></div>
+    </div>
+
+    <div class="model-card featured">
+      <div class="model-name">MobileNetV2 Transfer Learning</div>
+      <div class="model-type">ImageNet weights · 2-phase fine-tuning</div>
+      <div class="metric-bar-wrap">
+        <div class="metric-bar-label"><span>Expected accuracy</span><span>≥ 92%</span></div>
+        <div class="metric-bar-track"><div class="metric-bar-fill fill-coral" style="width:92%"></div></div>
+        <div class="metric-bar-label"><span>Fine-tuned from layer</span><span>70% of base</span></div>
+        <div class="metric-bar-track"><div class="metric-bar-fill fill-coral" style="width:70%"></div></div>
+      </div>
+      <div class="model-metric"><span class="metric-label">Head phase</span><span class="metric-val">Adam lr=1e-3 · 8 epochs</span></div>
+      <div class="model-metric"><span class="metric-label">Fine-tune phase</span><span class="metric-val">Adam lr=1e-5 · 18 epochs</span></div>
+      <div class="model-metric"><span class="metric-label">BN layers</span><span class="metric-val">Frozen throughout</span></div>
+      <div class="model-metric"><span class="metric-label">Eval</span><span class="metric-val">TTA (flip average)</span></div>
+    </div>
+  </div>
+
+  <!-- QUICKSTART -->
+  <div class="section-label">Quick start</div>
+  <h2 class="section-title">Run it yourself in 4 steps</h2>
+  <p class="section-desc">No local GPU needed. The notebook is pre-configured for Kaggle paths — it also runs on Colab with a small path change.</p>
+
+  <div class="code-label">Option A — Kaggle (recommended, no path changes needed)</div>
+  <div class="code-block"><pre><span class="cm"># 1. Go to the Kaggle dataset page and click "New Notebook"</span>
+<span class="cm">#    https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small</span>
+<span class="cm"># 2. Upload Product_classifier.ipynb from the GitHub repo</span>
+<span class="cm"># 3. Enable GPU: Settings → Accelerator → GPU T4 x2</span>
+<span class="cm"># 4. Run All — data paths are already correct</span></pre></div>
+
+  <div class="code-label">Option B — Google Colab (requires the Kaggle CLI)</div>
+  <div class="code-block"><pre><span class="cm"># Install Kaggle CLI and download the dataset</span>
+<span class="kw">!pip install</span> kaggle -q
+<span class="kw">!mkdir</span> -p ~/.kaggle && cp kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
+<span class="kw">!kaggle datasets download</span> <span class="st">-d paramaggarwal/fashion-product-images-small</span> --unzip
+
+<span class="cm"># Then update DATA_DIR in cell 2 of the notebook:</span>
+DATA_DIR = <span class="st">Path('./fashion-product-images-small')</span></pre></div>
+
+  <div class="code-label">Clone the repo and install dependencies locally</div>
+  <div class="code-block"><pre><span class="kw">git clone</span> https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier.git
+<span class="kw">cd</span> DSC_120_A_ML_Product_Identifier
+<span class="kw">pip install</span> tensorflow keras numpy pandas matplotlib seaborn scikit-learn opencv-python pillow
+<span class="kw">jupyter notebook</span> Product_classifier.ipynb</pre></div>
+
+  <!-- PAPERS -->
+  <div class="section-label">Papers behind the notebook</div>
+  <h2 class="section-title">Further reading</h2>
+  <p class="section-desc">Every technique in the notebook has a paper worth understanding before your next project.</p>
+
+  <div class="resources-grid">
+    <a href="https://arxiv.org/abs/1709.01507" target="_blank" class="resource-card card-purple">
+      <div class="card-icon icon-purple">📄</div>
+      <div class="card-tag tag-purple">Paper</div>
+      <div class="card-title">Squeeze-and-Excitation Networks</div>
+      <div class="card-desc">Hu et al. (2018). The SE block used in every residual stage of the custom CNN. Recalibrates channel weights adaptively without major parameter cost.</div>
+      <div class="card-meta">arxiv.org · 2018 <span class="card-arrow">↗</span></div>
+    </a>
+    <a href="https://arxiv.org/abs/1801.04381" target="_blank" class="resource-card card-blue">
+      <div class="card-icon icon-blue">📄</div>
+      <div class="card-tag tag-blue">Paper</div>
+      <div class="card-title">MobileNetV2</div>
+      <div class="card-desc">Sandler et al. (2018). Inverted residuals and linear bottlenecks — the architecture behind the transfer learning comparison model.</div>
+      <div class="card-meta">arxiv.org · 2018 <span class="card-arrow">↗</span></div>
+    </a>
+    <a href="https://arxiv.org/abs/1710.09412" target="_blank" class="resource-card card-teal">
+      <div class="card-icon icon-teal">📄</div>
+      <div class="card-tag tag-teal">Paper</div>
+      <div class="card-title">MixUp Training</div>
+      <div class="card-desc">Zhang et al. (2018). Mixing pairs of training examples and labels. Used in the notebook at α=0.2 as a batch-level augmentation step.</div>
+      <div class="card-meta">arxiv.org · 2018 <span class="card-arrow">↗</span></div>
+    </a>
+    <a href="https://arxiv.org/abs/1610.02391" target="_blank" class="resource-card card-coral">
+      <div class="card-icon icon-coral">📄</div>
+      <div class="card-tag tag-coral">Paper</div>
+      <div class="card-title">Grad-CAM</div>
+      <div class="card-desc">Selvaraju et al. (2017). Gradient-weighted Class Activation Mapping. Used in Section 16 to visualize what the CNN focuses on for each prediction.</div>
+      <div class="card-meta">arxiv.org · 2017 <span class="card-arrow">↗</span></div>
+    </a>
+    <a href="https://www.tensorflow.org/guide/data_performance" target="_blank" class="resource-card card-blue">
+      <div class="card-icon icon-blue">📖</div>
+      <div class="card-tag tag-blue">Guide</div>
+      <div class="card-title">tf.data Performance Guide</div>
+      <div class="card-desc">Covers AUTOTUNE, prefetch, and parallel map — all patterns the notebook uses to keep the GPU fed during training.</div>
+      <div class="card-meta">tensorflow.org <span class="card-arrow">↗</span></div>
+    </a>
+    <a href="https://keras.io/examples/vision/grad_cam/" target="_blank" class="resource-card card-purple">
+      <div class="card-icon icon-purple">📖</div>
+      <div class="card-tag tag-purple">Tutorial</div>
+      <div class="card-title">Keras Grad-CAM Example</div>
+      <div class="card-desc">The official Keras tutorial the notebook's Grad-CAM implementation is based on. Includes the full GradientTape approach with working code.</div>
+      <div class="card-meta">keras.io <span class="card-arrow">↗</span></div>
+    </a>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-title">Ready to run it?</div>
+    <p class="footer-sub">Everything's free — dataset, GPU, and code.</p>
+    <div class="hero-cta-row" style="justify-content:center; display:flex; flex-wrap:wrap; gap:12px;">
+      <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier/blob/main/Product_classifier.ipynb" target="_blank" class="btn-primary">📓 Open Notebook</a>
+      <a href="https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small" target="_blank" class="btn-outline">↓ Get Dataset</a>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier" class="footer-link">GitHub Repo</a>
+      <a href="https://keras.io" class="footer-link">Keras Docs</a>
+      <a href="https://www.tensorflow.org" class="footer-link">TensorFlow</a>
+      <a href="https://scikit-learn.org" class="footer-link">scikit-learn</a>
+      <a href="https://colab.research.google.com" class="footer-link">Google Colab</a>
+    </div>
+    <div class="footer-author">DSC 120A · Phase 2 · <strong>Siddhant Santosh Mathapati</strong></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const canvas=document.getElementById('heroCanvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,nodes;
+  function resize(){ W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight; }
+  function init(){
+    nodes=[];
+    const n=Math.floor(W*H/13000);
+    for(let i=0;i<n;i++) nodes.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2.2+1,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,p:Math.random()*Math.PI*2});
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    nodes.forEach(n=>{
+      n.x+=n.vx; n.y+=n.vy; n.p+=.018;
+      if(n.x<0||n.x>W)n.vx*=-1;
+      if(n.y<0||n.y>H)n.vy*=-1;
+    });
+    for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+      const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<110){ctx.beginPath();ctx.strokeStyle=`rgba(133,183,235,${(1-d/110)*.5})`;ctx.lineWidth=.6;ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();}
+    }
+    nodes.forEach(n=>{
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(133,183,235,${.5+.5*Math.sin(n.p)})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  resize(); init(); draw();
+  window.addEventListener('resize',()=>{resize();init();});
+})();
+
+document.querySelectorAll('.metric-bar-fill').forEach(b=>{
+  const w=b.style.width; b.style.width='0';
+  setTimeout(()=>{ b.style.width=w; },500);
+});
+</script>
+</body>
+</html>
