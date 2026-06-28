@@ -1,0 +1,6 @@
+Metric,Custom CNN,MobileNetV2 TL
+Accuracy,0.9854,0.9872
+Macro Precision,0.9817,0.9831
+Macro Recall,0.9689,0.9708
+Macro F1,0.975,0.9767
+Weighted F1,0.9852,0.987
