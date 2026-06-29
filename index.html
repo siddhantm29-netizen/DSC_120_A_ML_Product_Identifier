@@ -659,7 +659,7 @@ DATA_DIR = <span class="st">Path('./fashion-product-images-small')</span></pre><
         <div class="upload-placeholder" id="uploadPlaceholder">
           <div class="upload-icon">🖼️</div>
           <div class="upload-text">Drop an image or <span>click to browse</span></div>
-          <div class="upload-hint">Bags · Bottomwear · Eyewear · Footwear · Innerwear · Jewellery · Socks · Topwear · Wallets · Watches</div>
+          <div class="upload-hint">Topwear · Shoes · Bags · Bottomwear · Watches · Innerwear · Jewellery · Eyewear · Fragrance · Sandal</div>
         </div>
         <img id="previewImg" class="preview-img" alt="Preview" style="display:none;">
       </div>
@@ -799,147 +799,201 @@ document.querySelectorAll('.metric-bar-fill').forEach(b=>{
 });
 </script>
 
-<!-- Gradio 4.x client — handles queue/SSE protocol automatically -->
-<script type="module">
-import { Client } from 'https://esm.sh/@gradio/client';
+<script>
+/* ── Fashion classifier demo (Gradio 5.x native API — no external library) ── */
+(function () {
+  const API  = 'https://sid009991-fashion-classifier.hf.space/gradio_api';
+  const FILL = ['conf-fill-1', 'conf-fill-2', 'conf-fill-3'];
 
-const SPACE = 'sid009991/fashion-classifier';
-const FILL_CLASSES = ['conf-fill-1','conf-fill-2','conf-fill-3','conf-fill-4','conf-fill-5'];
+  const zone    = document.getElementById('uploadZone');
+  const input   = document.getElementById('fileInput');
+  const ph      = document.getElementById('uploadPlaceholder');
+  const img     = document.getElementById('previewImg');
+  const btnRun  = document.getElementById('btnClassify');
+  const btnClr  = document.getElementById('btnClear');
+  const status  = document.getElementById('demoStatus');
+  const empty   = document.getElementById('resultEmpty');
+  const content = document.getElementById('resultContent');
+  const lbl     = document.getElementById('topLabel');
+  const conf    = document.getElementById('topConf');
+  const bars    = document.getElementById('confBars');
 
-const zone          = document.getElementById('uploadZone');
-const fileInput     = document.getElementById('fileInput');
-const placeholder   = document.getElementById('uploadPlaceholder');
-const previewImg    = document.getElementById('previewImg');
-const btnClassify   = document.getElementById('btnClassify');
-const btnClear      = document.getElementById('btnClear');
-const demoStatus    = document.getElementById('demoStatus');
-const resultEmpty   = document.getElementById('resultEmpty');
-const resultContent = document.getElementById('resultContent');
-const topLabel      = document.getElementById('topLabel');
-const topConf       = document.getElementById('topConf');
-const confBars      = document.getElementById('confBars');
+  let currentFile    = null;
+  let currentBase64  = null;
+  let busy           = false;
 
-let currentFile = null;
-let busy = false;
-let gradioClient = null;
-
-async function getClient() {
-  if (!gradioClient) {
-    demoStatus.textContent = 'Connecting…';
-    gradioClient = await Client.connect(SPACE);
-  }
-  return gradioClient;
-}
-
-/* open file picker on click / keyboard */
-zone.addEventListener('click', () => fileInput.click());
-zone.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') fileInput.click(); });
-
-/* drag-and-drop */
-zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-zone.addEventListener('drop', e => {
-  e.preventDefault(); zone.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) loadFile(file);
-});
-
-fileInput.addEventListener('change', () => {
-  if (fileInput.files[0]) loadFile(fileInput.files[0]);
-});
-
-btnClassify.addEventListener('click', classify);
-btnClear.addEventListener('click', clearAll);
-
-function loadFile(file) {
-  currentFile = file;
-  const reader = new FileReader();
-  reader.onload = e => {
-    previewImg.src = e.target.result;
-    previewImg.style.display = 'block';
-    placeholder.style.display = 'none';
-    btnClassify.disabled = false;
-    btnClear.style.display = 'inline';
-    demoStatus.textContent = file.name;
-    demoStatus.className = 'demo-status';
-    resetResults();
-  };
-  reader.readAsDataURL(file);
-}
-
-function clearAll() {
-  currentFile = null;
-  fileInput.value = '';
-  previewImg.style.display = 'none';
-  previewImg.src = '';
-  placeholder.style.display = '';
-  btnClassify.disabled = true;
-  btnClear.style.display = 'none';
-  demoStatus.textContent = 'No image selected';
-  demoStatus.className = 'demo-status';
-  resetResults();
-}
-
-function resetResults() {
-  resultEmpty.style.display = '';
-  resultContent.style.display = 'none';
-  confBars.innerHTML = '';
-}
-
-async function classify() {
-  if (!currentFile || busy) return;
-  busy = true;
-  btnClassify.disabled = true;
-  btnClassify.innerHTML = '<div class="spinner"></div> Classifying…';
-  demoStatus.textContent = 'Sending to model…';
-  demoStatus.className = 'demo-status';
-
-  try {
-    const client = await getClient();
-    /* @gradio/client accepts a File/Blob directly for gr.Image inputs */
-    const result = await client.predict('/predict', [currentFile]);
-    const output = result.data[0]; // {label, confidences:[{label,confidence}]}
-    showResults(output);
-    demoStatus.textContent = 'Done';
-    demoStatus.className = 'demo-status';
-  } catch(err) {
-    demoStatus.innerHTML = `<span class="demo-error">⚠ ${err.message || 'Request failed'}</span>`;
-  } finally {
-    busy = false;
-    btnClassify.disabled = false;
-    btnClassify.innerHTML = '<span id="btnIcon">🔍</span> Classify';
-  }
-}
-
-function showResults(output) {
-  const confs = output.confidences || [];
-  const best  = confs[0] || { label: output.label, confidence: 1 };
-
-  topLabel.textContent = best.label;
-  topConf.textContent  = `${(best.confidence * 100).toFixed(1)}% confidence`;
-
-  confBars.innerHTML = '';
-  confs.slice(0, 5).forEach((c, i) => {
-    const pct = (c.confidence * 100).toFixed(1);
-    const row = document.createElement('div');
-    row.className = 'conf-row';
-    row.innerHTML = `
-      <div class="conf-row-header">
-        <span class="conf-name">${c.label}</span>
-        <span class="conf-pct">${pct}%</span>
-      </div>
-      <div class="conf-track">
-        <div class="conf-fill ${FILL_CLASSES[i]}" style="width:0%"></div>
-      </div>`;
-    confBars.appendChild(row);
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      row.querySelector('.conf-fill').style.width = pct + '%';
-    }));
+  zone.addEventListener('click',    () => input.click());
+  zone.addEventListener('keydown',  e => { if (e.key === 'Enter' || e.key === ' ') input.click(); });
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave',() => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) loadFile(f);
   });
+  input.addEventListener('change', () => { if (input.files[0]) loadFile(input.files[0]); });
+  btnRun.addEventListener('click', classify);
+  btnClr.addEventListener('click', clearAll);
 
-  resultEmpty.style.display = 'none';
-  resultContent.style.display = 'block';
-}
+  function loadFile(file) {
+    currentFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      currentBase64 = e.target.result;          // "data:image/jpeg;base64,..."
+      img.src = currentBase64;
+      img.style.display   = 'block';
+      ph.style.display    = 'none';
+      btnRun.disabled     = false;
+      btnClr.style.display = 'inline';
+      status.textContent  = file.name;
+      status.className    = 'demo-status';
+      resetResults();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearAll() {
+    currentFile = currentBase64 = null;
+    input.value = '';
+    img.style.display    = 'none';
+    img.src              = '';
+    ph.style.display     = '';
+    btnRun.disabled      = true;
+    btnClr.style.display = 'none';
+    status.textContent   = 'No image selected';
+    status.className     = 'demo-status';
+    resetResults();
+  }
+
+  function resetResults() {
+    empty.style.display   = '';
+    content.style.display = 'none';
+    bars.innerHTML        = '';
+  }
+
+  /* ── Gradio 5.x: POST /call/predict → SSE /call/predict/{event_id} ── */
+  function awaitResult(eventId) {
+    return new Promise((resolve, reject) => {
+      const es = new EventSource(`${API}/call/predict/${eventId}`);
+      const t  = setTimeout(() => { es.close(); reject(new Error('Timed out after 60 s')); }, 60000);
+
+      es.addEventListener('complete', e => {
+        clearTimeout(t); es.close();
+        try {
+          const raw = JSON.parse(e.data);
+          /* Gradio 5 wraps outputs as [value] per component */
+          resolve(Array.isArray(raw) ? raw[0] : raw);
+        } catch (_) { reject(new Error('Could not parse response')); }
+      });
+
+      es.addEventListener('error', e => {
+        clearTimeout(t); es.close();
+        reject(new Error(e.data ? JSON.stringify(e.data) : 'Inference error'));
+      });
+
+      /* SSE connection-level error (network drop, 4xx/5xx on the stream URL) */
+      es.onerror = () => { clearTimeout(t); es.close(); reject(new Error('Stream connection failed')); };
+    });
+  }
+
+  async function callPredict(data) {
+    const res = await fetch(`${API}/call/predict`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ data }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (!json.event_id) throw new Error('No event_id in response');
+    return awaitResult(json.event_id);
+  }
+
+  async function runInference(setStatus) {
+    /* Attempt 1: send base64 data-URL directly — works if Gradio accepts it */
+    setStatus('Calling model…');
+    try {
+      return await callPredict([currentBase64]);
+    } catch (_) { /* fall through */ }
+
+    /* Attempt 2: upload the file first, then reference it by URL */
+    setStatus('Uploading image…');
+    const fd = new FormData();
+    fd.append('files', currentFile);
+    const upRes = await fetch(`${API}/upload`, { method: 'POST', body: fd });
+    if (!upRes.ok) throw new Error(`Upload failed (${upRes.status})`);
+    const uploaded = await upRes.json();               // e.g. ["tmp/gradio/.../img.jpg"]
+    const raw = uploaded[0];
+    const fileUrl = typeof raw === 'string'
+      ? (raw.startsWith('http') ? raw : `https://sid009991-fashion-classifier.hf.space/gradio_api/file=${raw}`)
+      : (raw.url || `https://sid009991-fashion-classifier.hf.space/gradio_api/file=${raw.path}`);
+
+    const fileData = {
+      url:       fileUrl,
+      orig_name: currentFile.name,
+      mime_type: currentFile.type || 'image/jpeg',
+      size:      currentFile.size,
+      is_stream: false,
+      meta:      { _type: 'gradio.FileData' },
+    };
+
+    setStatus('Running inference…');
+    return callPredict([fileData]);
+  }
+
+  async function classify() {
+    if (!currentBase64 || busy) return;
+    busy = true;
+    btnRun.disabled  = true;
+    btnRun.innerHTML = '<div class="spinner"></div> Classifying…';
+
+    const setStatus = (msg, isErr) => {
+      status.className = 'demo-status';
+      status.innerHTML = isErr ? `<span class="demo-error">⚠ ${msg}</span>` : msg;
+    };
+
+    try {
+      const output = await runInference(setStatus);
+      showResults(output);
+      setStatus('Done');
+    } catch (err) {
+      setStatus(err.message || 'Request failed', true);
+    } finally {
+      busy = false;
+      btnRun.disabled  = false;
+      btnRun.innerHTML = '<span>🔍</span> Classify';
+    }
+  }
+
+  function showResults(output) {
+    const confs = output.confidences || [];
+    const best  = confs[0] || { label: output.label || '?', confidence: 1 };
+
+    lbl.textContent  = best.label;
+    conf.textContent = `${(best.confidence * 100).toFixed(1)}% confidence`;
+
+    bars.innerHTML = '';
+    confs.slice(0, 3).forEach((c, i) => {
+      const pct = (c.confidence * 100).toFixed(1);
+      const row = document.createElement('div');
+      row.className = 'conf-row';
+      row.innerHTML = `
+        <div class="conf-row-header">
+          <span class="conf-name">${c.label}</span>
+          <span class="conf-pct">${pct}%</span>
+        </div>
+        <div class="conf-track">
+          <div class="conf-fill ${FILL[i]}" style="width:0%"></div>
+        </div>`;
+      bars.appendChild(row);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        row.querySelector('.conf-fill').style.width = pct + '%';
+      }));
+    });
+
+    empty.style.display   = 'none';
+    content.style.display = 'block';
+  }
+}());
 </script>
 </body>
 </html>
