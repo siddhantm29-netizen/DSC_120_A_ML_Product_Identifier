@@ -923,13 +923,6 @@ document.querySelectorAll('.metric-bar-fill').forEach(b=>{
   }
 
   async function runInference(setStatus) {
-    /* Attempt 1: send base64 data-URL directly — works if Gradio accepts it */
-    setStatus('Calling model…');
-    try {
-      return await callPredict([currentBase64]);
-    } catch (_) { /* fall through */ }
-
-    /* Attempt 2: upload the file first, then reference it by URL */
     setStatus('Uploading image…');
     const fd = new FormData();
     fd.append('files', currentFile);
