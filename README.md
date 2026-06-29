@@ -2,7 +2,7 @@
 
 **Custom CNN vs MobileNetV2 Transfer Learning** · 10-class fashion image classifier trained on the [Fashion Product Images (Small)](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small) dataset from Kaggle.
 
-[![HuggingFace Space](https://img.shields.io/badge/🤗%20HuggingFace-Live%20Demo-yellow)](https://huggingface.co/spaces/YOUR_USERNAME/fashion-classification)
+[![HuggingFace Space](https://img.shields.io/badge/🤗%20HuggingFace-Live%20Demo-yellow)](https://huggingface.co/spaces/sid009991/fashion-classifier)
 [![Dataset](https://img.shields.io/badge/Dataset-Kaggle-blue)](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -44,24 +44,18 @@ The classifier recognises 10 fashion sub-categories:
 
 ## Live Demo — HuggingFace Spaces
 
-The best model (MobileNetV2) is deployed as an interactive Gradio app:
+The best model (Custom CNN) is deployed as an interactive Gradio app:
 
-👉 **[Try it here](https://huggingface.co/spaces/YOUR_USERNAME/fashion-classification)**
+👉 **[Try it here](https://huggingface.co/spaces/sid009991/fashion-classifier)**
 
 Upload any fashion product image and the app returns the predicted sub-category with a confidence score.
-
-> **Deployment note:** Replace `YOUR_USERNAME` above with your actual HuggingFace username after pushing the Space.
 
 ---
 
 ## Models on HuggingFace Hub
 
 | Model | HuggingFace Link |
-|---|---|
-| MobileNetV2 (Keras) | [YOUR_USERNAME/mobilenetv2-fashion](https://huggingface.co/YOUR_USERNAME/mobilenetv2-fashion) |
-| Custom CNN (Keras) | [YOUR_USERNAME/custom-cnn-fashion](https://huggingface.co/YOUR_USERNAME/custom-cnn-fashion) |
-| MobileNetV2 (TF.js) | [YOUR_USERNAME/mobilenetv2-fashion-tfjs](https://huggingface.co/YOUR_USERNAME/mobilenetv2-fashion-tfjs) |
-
+| Custom CNN (Keras) | [YOUR_USERNAME/custom-cnn-fashion](hhttps://huggingface.co/spaces/sid009991/fashion-classifier) |
 ---
 
 ## Repository Structure
@@ -125,7 +119,7 @@ Each SE block: squeeze channels ÷8 → ReLU → expand → sigmoid gate.
 ### 1. Clone and set up
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/fashion-classification.git
+git clone https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier
 cd fashion-classification
 pip install tensorflow tensorflowjs kaggle
 ```
@@ -161,7 +155,7 @@ This auto-installs `tensorflowjs` if missing and converts `best_custom_cnn.keras
 git init hf-space && cd hf-space
 # Add app.py (Gradio interface) and your .keras model file
 git add . && git commit -m "initial deploy"
-git remote add hf https://huggingface.co/spaces/YOUR_USERNAME/fashion-classification
+git remote add hf https://huggingface.co/spaces/sid009991/fashion-classifier
 git push hf main
 ```
 
@@ -188,7 +182,7 @@ gr.Interface(
     fn=predict,
     inputs=gr.Image(type="pil"),
     outputs=gr.Label(num_top_classes=3),
-    title="Fashion Product Classifier",
+    title="Product Classifier",
     description="Upload a fashion product image to classify it into one of 10 sub-categories."
 ).launch()
 ```
@@ -220,7 +214,7 @@ gr.Interface(
   author = {Siddhant Santosh Mathapati},
   title  = {Fashion Product Sub-Category Classification Using Custom CNN and MobileNetV2},
   year   = {2026},
-  url    = {https://github.com/YOUR_USERNAME/fashion-classification}
+  url    = {https://github.com/siddhantm29-netizen/DSC_120_A_ML_Product_Identifier
 }
 ```
 
