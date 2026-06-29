@@ -309,6 +309,81 @@
   .st { color: var(--teal-lt); }
   .nm { color: var(--coral-lt); }
 
+  /* ─── DEMO WIDGET ─── */
+  .demo-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 64px;
+  }
+  .demo-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  @media (max-width: 640px) { .demo-body { grid-template-columns: 1fr; } }
+
+  .upload-zone {
+    border-right: 1px solid var(--border); min-height: 320px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; transition: background .15s;
+    background: var(--surface);
+  }
+  .upload-zone:hover { background: #f0effe; }
+  .upload-zone.drag-over { background: #e8f2ff; border-color: var(--blue); }
+  @media (max-width: 640px) { .upload-zone { border-right: none; border-bottom: 1px solid var(--border); } }
+
+  .upload-placeholder { text-align: center; padding: 32px 24px; pointer-events: none; }
+  .upload-icon { font-size: 40px; margin-bottom: 12px; }
+  .upload-text { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .upload-text span { color: var(--blue); text-decoration: underline; }
+  .upload-hint { font-size: 12px; color: var(--text-muted); line-height: 1.6; max-width: 220px; margin: 0 auto; }
+
+  .preview-img { width: 100%; height: 100%; object-fit: contain; max-height: 320px; display: block; padding: 16px; }
+
+  .result-panel { padding: 28px; display: flex; flex-direction: column; justify-content: center; min-height: 320px; }
+  .result-empty { text-align: center; color: var(--text-muted); font-size: 14px; }
+  .result-empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+  .result-top-label {
+    font-family: var(--font-display); font-size: 22px; font-weight: 700;
+    color: var(--text); margin-bottom: 4px;
+  }
+  .result-top-conf { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+
+  .conf-row { margin-bottom: 10px; }
+  .conf-row-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+  .conf-name { font-weight: 500; color: var(--text); }
+  .conf-pct  { color: var(--text-muted); font-family: var(--font-display); }
+  .conf-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .conf-fill  { height: 100%; border-radius: 3px; transition: width .6s ease; }
+  .conf-fill-1 { background: var(--blue); }
+  .conf-fill-2 { background: var(--teal); }
+  .conf-fill-3 { background: var(--purple); }
+  .conf-fill-4 { background: var(--coral-lt); }
+  .conf-fill-5 { background: #9898b8; }
+
+  .demo-actions { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--surface); }
+  .btn-classify {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue); color: #fff;
+    font-family: var(--font-display); font-weight: 600; font-size: 14px;
+    padding: 10px 22px; border-radius: 8px; border: none; cursor: pointer;
+    transition: background .15s; flex-shrink: 0;
+  }
+  .btn-classify:hover:not(:disabled) { background: #2a7acc; }
+  .btn-classify:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-clear {
+    font-size: 13px; color: var(--text-muted); background: none; border: none;
+    cursor: pointer; font-family: var(--font-body); padding: 6px;
+    transition: color .15s;
+  }
+  .btn-clear:hover { color: var(--coral); }
+  .demo-status { font-size: 13px; color: var(--text-muted); margin-left: auto; }
+
+  .spinner {
+    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin .7s linear infinite; flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .demo-error { color: var(--coral); font-size: 13px; margin-left: auto; }
+
   /* ─── FOOTER ─── */
   .footer { background: var(--navy); padding: 48px 24px; text-align: center; }
   .footer-inner { max-width: 560px; margin: 0 auto; }
@@ -571,6 +646,48 @@ DATA_DIR = <span class="st">Path('./fashion-product-images-small')</span></pre><
 <span class="kw">pip install</span> tensorflow keras numpy pandas matplotlib seaborn scikit-learn opencv-python pillow
 <span class="kw">jupyter notebook</span> Product_classifier.ipynb</pre></div>
 
+  <!-- LIVE DEMO -->
+  <div class="section-label">Live demo</div>
+  <h2 class="section-title">Try the model</h2>
+  <p class="section-desc">Upload any fashion product photo — the CNN classifies it into one of 10 categories in real time, powered by Hugging Face Spaces.</p>
+
+  <div class="demo-card">
+    <div class="demo-body">
+      <!-- Upload zone -->
+      <div class="upload-zone" id="uploadZone" role="button" tabindex="0" aria-label="Upload image">
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <div class="upload-placeholder" id="uploadPlaceholder">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-text">Drop an image or <span>click to browse</span></div>
+          <div class="upload-hint">Bags · Bottomwear · Eyewear · Footwear · Innerwear · Jewellery · Socks · Topwear · Wallets · Watches</div>
+        </div>
+        <img id="previewImg" class="preview-img" alt="Preview" style="display:none;">
+      </div>
+
+      <!-- Result panel -->
+      <div class="result-panel" id="resultPanel">
+        <div class="result-empty" id="resultEmpty">
+          <div class="result-empty-icon">✨</div>
+          <div>Upload a photo to see<br>category predictions</div>
+        </div>
+        <div id="resultContent" style="display:none;">
+          <div class="result-top-label" id="topLabel"></div>
+          <div class="result-top-conf" id="topConf"></div>
+          <div id="confBars"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action bar -->
+    <div class="demo-actions">
+      <button class="btn-classify" id="btnClassify" disabled>
+        <span id="btnIcon">🔍</span> Classify
+      </button>
+      <button class="btn-clear" id="btnClear" style="display:none;">✕ Clear</button>
+      <span class="demo-status" id="demoStatus">No image selected</span>
+    </div>
+  </div>
+
   <!-- PAPERS -->
   <div class="section-label">Papers behind the notebook</div>
   <h2 class="section-title">Further reading</h2>
@@ -644,6 +761,7 @@ DATA_DIR = <span class="st">Path('./fashion-product-images-small')</span></pre><
 </footer>
 
 <script>
+/* ── Hero canvas animation ── */
 (function(){
   const canvas=document.getElementById('heroCanvas');
   const ctx=canvas.getContext('2d');
@@ -679,6 +797,146 @@ document.querySelectorAll('.metric-bar-fill').forEach(b=>{
   const w=b.style.width; b.style.width='0';
   setTimeout(()=>{ b.style.width=w; },500);
 });
+
+/* ── Fashion classifier demo ── */
+(function(){
+  const API = 'https://sid009991-fashion-classifier.hf.space/run/predict';
+  const FILL_CLASSES = ['conf-fill-1','conf-fill-2','conf-fill-3','conf-fill-4','conf-fill-5'];
+
+  const zone        = document.getElementById('uploadZone');
+  const fileInput   = document.getElementById('fileInput');
+  const placeholder = document.getElementById('uploadPlaceholder');
+  const previewImg  = document.getElementById('previewImg');
+  const btnClassify = document.getElementById('btnClassify');
+  const btnClear    = document.getElementById('btnClear');
+  const btnIcon     = document.getElementById('btnIcon');
+  const demoStatus  = document.getElementById('demoStatus');
+  const resultEmpty   = document.getElementById('resultEmpty');
+  const resultContent = document.getElementById('resultContent');
+  const topLabel    = document.getElementById('topLabel');
+  const topConf     = document.getElementById('topConf');
+  const confBars    = document.getElementById('confBars');
+
+  let currentDataUrl = null;
+  let busy = false;
+
+  /* open file picker on click / keyboard */
+  zone.addEventListener('click', () => fileInput.click());
+  zone.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') fileInput.click(); });
+
+  /* drag-and-drop */
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if(file && file.type.startsWith('image/')) loadFile(file);
+  });
+
+  fileInput.addEventListener('change', () => {
+    if(fileInput.files[0]) loadFile(fileInput.files[0]);
+  });
+
+  btnClassify.addEventListener('click', classify);
+  btnClear.addEventListener('click', clearAll);
+
+  function loadFile(file){
+    const reader = new FileReader();
+    reader.onload = e => {
+      currentDataUrl = e.target.result;
+      previewImg.src = currentDataUrl;
+      previewImg.style.display = 'block';
+      placeholder.style.display = 'none';
+      btnClassify.disabled = false;
+      btnClear.style.display = 'inline';
+      demoStatus.textContent = file.name;
+      demoStatus.className = 'demo-status';
+      resetResults();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearAll(){
+    currentDataUrl = null;
+    fileInput.value = '';
+    previewImg.style.display = 'none';
+    previewImg.src = '';
+    placeholder.style.display = '';
+    btnClassify.disabled = true;
+    btnClear.style.display = 'none';
+    demoStatus.textContent = 'No image selected';
+    demoStatus.className = 'demo-status';
+    resetResults();
+  }
+
+  function resetResults(){
+    resultEmpty.style.display = '';
+    resultContent.style.display = 'none';
+    confBars.innerHTML = '';
+  }
+
+  async function classify(){
+    if(!currentDataUrl || busy) return;
+    busy = true;
+    btnClassify.disabled = true;
+    btnIcon.textContent = '';
+    btnClassify.innerHTML = '<div class="spinner"></div> Classifying…';
+    demoStatus.textContent = 'Sending to model…';
+    demoStatus.className = 'demo-status';
+
+    try {
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: [currentDataUrl] })
+      });
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const output = json.data[0]; // {label, confidences:[{label,confidence}]}
+      showResults(output);
+      demoStatus.textContent = 'Done';
+      demoStatus.className = 'demo-status';
+    } catch(err) {
+      demoStatus.innerHTML = `<span class="demo-error">⚠ ${err.message || 'Request failed'}</span>`;
+    } finally {
+      busy = false;
+      btnClassify.disabled = false;
+      btnClassify.innerHTML = '<span id="btnIcon">🔍</span> Classify';
+    }
+  }
+
+  function showResults(output){
+    const confs = output.confidences || [];
+    const best  = confs[0] || { label: output.label, confidence: 1 };
+
+    topLabel.textContent = best.label;
+    topConf.textContent  = `${(best.confidence * 100).toFixed(1)}% confidence`;
+
+    confBars.innerHTML = '';
+    confs.slice(0, 5).forEach((c, i) => {
+      const pct = (c.confidence * 100).toFixed(1);
+      const row = document.createElement('div');
+      row.className = 'conf-row';
+      row.innerHTML = `
+        <div class="conf-row-header">
+          <span class="conf-name">${c.label}</span>
+          <span class="conf-pct">${pct}%</span>
+        </div>
+        <div class="conf-track">
+          <div class="conf-fill ${FILL_CLASSES[i]}" style="width:0%"></div>
+        </div>`;
+      confBars.appendChild(row);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          row.querySelector('.conf-fill').style.width = pct + '%';
+        });
+      });
+    });
+
+    resultEmpty.style.display = 'none';
+    resultContent.style.display = 'block';
+  }
+})();
 </script>
 </body>
 </html>
