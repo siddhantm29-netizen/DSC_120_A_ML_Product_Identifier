@@ -55,7 +55,7 @@ Upload any fashion product image and the app returns the predicted sub-category 
 ## Models on HuggingFace Hub
 
 | Model | HuggingFace Link |
-| Custom CNN (Keras) | [YOUR_USERNAME/custom-cnn-fashion](hhttps://huggingface.co/spaces/sid009991/fashion-classifier) |
+| Custom CNN (Keras) | (hhttps://huggingface.co/spaces/sid009991/fashion-classifier) |
 ---
 
 ## Repository Structure
