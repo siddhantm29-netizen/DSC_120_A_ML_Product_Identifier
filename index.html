@@ -888,7 +888,10 @@ document.querySelectorAll('.metric-bar-fill').forEach(b=>{
 
       es.addEventListener('error', e => {
         clearTimeout(t); es.close();
-        reject(new Error(e.data ? JSON.stringify(e.data) : 'Inference error'));
+        let msg = 'Inference failed';
+        try { const p = JSON.parse(e.data); if (p && p.error) msg = String(p.error); }
+        catch (_) { if (e.data) msg = String(e.data); }
+        reject(new Error(msg));
       });
 
       /* SSE connection-level error (network drop, 4xx/5xx on the stream URL) */
@@ -921,13 +924,16 @@ document.querySelectorAll('.metric-bar-fill').forEach(b=>{
     fd.append('files', currentFile);
     const upRes = await fetch(`${API}/upload`, { method: 'POST', body: fd });
     if (!upRes.ok) throw new Error(`Upload failed (${upRes.status})`);
-    const uploaded = await upRes.json();               // e.g. ["tmp/gradio/.../img.jpg"]
-    const raw = uploaded[0];
-    const fileUrl = typeof raw === 'string'
-      ? (raw.startsWith('http') ? raw : `https://sid009991-fashion-classifier.hf.space/gradio_api/file=${raw}`)
-      : (raw.url || `https://sid009991-fashion-classifier.hf.space/gradio_api/file=${raw.path}`);
+    const uploaded = await upRes.json();               // e.g. ["/tmp/gradio/.../img.jpg"]
+    const raw      = uploaded[0];
+    // Gradio 5.x returns the server-side absolute path as a plain string
+    const filePath = typeof raw === 'string' ? raw : (raw.path || '');
+    const fileUrl  = filePath.startsWith('http')
+      ? filePath
+      : `https://sid009991-fashion-classifier.hf.space/gradio_api/file=${filePath}`;
 
     const fileData = {
+      path:      filePath,   // required: Gradio 5.x preprocessor reads from this server path
       url:       fileUrl,
       orig_name: currentFile.name,
       mime_type: currentFile.type || 'image/jpeg',
