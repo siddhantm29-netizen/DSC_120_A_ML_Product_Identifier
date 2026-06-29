@@ -1,4 +1,4 @@
-# Fashion Product Sub-Category Classification
+# Product Classification
 
 **Custom CNN vs MobileNetV2 Transfer Learning** · 10-class fashion image classifier trained on the [Fashion Product Images (Small)](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small) dataset from Kaggle.
 
