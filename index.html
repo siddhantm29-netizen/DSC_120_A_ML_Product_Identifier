@@ -384,6 +384,11 @@
 
   .demo-error { color: var(--coral); font-size: 13px; margin-left: auto; }
 
+  /* ── Grad-CAM section ── */
+  .gradcam-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0 14px; }
+  .gradcam-header  { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .gradcam-img     { width: 100%; border-radius: 8px; display: block; border: 1px solid var(--border); }
+
   /* ─── FOOTER ─── */
   .footer { background: var(--navy); padding: 48px 24px; text-align: center; }
   .footer-inner { max-width: 560px; margin: 0 auto; }
@@ -674,6 +679,12 @@ DATA_DIR = <span class="st">Path('./fashion-product-images-small')</span></pre><
           <div class="result-top-label" id="topLabel"></div>
           <div class="result-top-conf" id="topConf"></div>
           <div id="confBars"></div>
+          <!-- Grad-CAM overlay — shown after classification -->
+          <div id="gradcamSection" style="display:none;">
+            <hr class="gradcam-divider">
+            <div class="gradcam-header">Grad-CAM · where the model looked</div>
+            <img id="gradcamImg" class="gradcam-img" alt="Grad-CAM heatmap">
+          </div>
         </div>
       </div>
     </div>
@@ -881,8 +892,8 @@ document.querySelectorAll('.metric-bar-fill').forEach(b=>{
         clearTimeout(t); es.close();
         try {
           const raw = JSON.parse(e.data);
-          /* Gradio 5 wraps outputs as [value] per component */
-          resolve(Array.isArray(raw) ? raw[0] : raw);
+          /* Gradio 5 wraps all outputs as an array — return it whole */
+          resolve(Array.isArray(raw) ? raw : [raw]);
         } catch (_) { reject(new Error('Could not parse response')); }
       });
 
@@ -958,8 +969,10 @@ document.querySelectorAll('.metric-bar-fill').forEach(b=>{
     };
 
     try {
-      const output = await runInference(setStatus);
-      showResults(output);
+      const result     = await runInference(setStatus);
+      const predictions = Array.isArray(result) ? result[0] : result;
+      const gradcamData = Array.isArray(result) && result.length > 1 ? result[1] : null;
+      showResults(predictions, gradcamData);
       setStatus('Done');
     } catch (err) {
       setStatus(err.message || 'Request failed', true);
@@ -970,7 +983,7 @@ document.querySelectorAll('.metric-bar-fill').forEach(b=>{
     }
   }
 
-  function showResults(output) {
+  function showResults(output, gradcamData) {
     const confs = output.confidences || [];
     const best  = confs[0] || { label: output.label || '?', confidence: 1 };
 
@@ -995,6 +1008,23 @@ document.querySelectorAll('.metric-bar-fill').forEach(b=>{
         row.querySelector('.conf-fill').style.width = pct + '%';
       }));
     });
+
+    /* Grad-CAM overlay */
+    const gradcamSection = document.getElementById('gradcamSection');
+    const gradcamImg     = document.getElementById('gradcamImg');
+    if (gradcamData) {
+      const url = typeof gradcamData === 'string'
+        ? gradcamData
+        : (gradcamData.url || (gradcamData.path
+            ? `https://sid009991-fashion-classifier.hf.space/gradio_api/file=${gradcamData.path}`
+            : null));
+      if (url) {
+        gradcamImg.src            = url;
+        gradcamSection.style.display = '';
+      }
+    } else {
+      gradcamSection.style.display = 'none';
+    }
 
     empty.style.display   = 'none';
     content.style.display = 'block';
